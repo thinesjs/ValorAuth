@@ -1,9 +1,9 @@
 <?php
 namespace Thinesjs\ValorAuth;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
 
 use Thinesjs\ValorAuth\Utils;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
 
 class Authentication {
     private $client;
@@ -18,7 +18,7 @@ class Authentication {
     private $csid;
     private $headers;
     private $address;
-    private $cp;
+    private $clientPlatform;
 
     public function __construct(Array $credentials = null){
         $this->client = new Client(array('curl' => [CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_3],'cookies' => true,'http_errors' => false, 'verify'=>false));
@@ -29,8 +29,8 @@ class Authentication {
             'Host' => 'auth.riotgames.com',
             'Accept-Language' => 'en-US,en;q=0.9',
         ];
-        $this->cp = "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9";
-        $this->address = $this->getAddr();
+        $this->clientPlatform = "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9";
+        $this->address = "auth.riotgames.com";
         if($credentials != null){
             if(!isset($credentials["password"])){
                 $this->accessToken = $credentials["username"];
@@ -45,13 +45,6 @@ class Authentication {
         }
     }
 
-    private function getAddr()
-    {
-//        $addrInfo = socket_addrinfo_lookup("auth.riotgames.com", 443);
-//        if (!$addrInfo) throw new Exception('Failed to get Address.');
-//        return socket_addrinfo_explain($addrInfo[0])["ai_addr"]["sin_addr"];
-        return "auth.riotgames.com";
-    }
     public function reAuth(){
         if (!isset($_COOKIE["ssid"]) ) return;
         $utils = new Utils();
@@ -70,8 +63,7 @@ class Authentication {
         session(['entitlements_token' => $entitlement]);
         session(['shard' => $this->shard]);
 
-        return array("accessToken"=>$this->accessToken,
-                    "entitlements_token"=>$entitlement,);
+        return array("accessToken"=>$this->accessToken, "entitlements_token"=>$entitlement,);
     }
 
     public function collectCookies(){
@@ -113,7 +105,7 @@ class Authentication {
         return $this->accessToken;
     }
 
-    public function start2FA($code)
+    public function requestMfa($code)
     {
         $cookieJar = CookieJar::fromArray([
             'asid' => $_COOKIE['asid']
@@ -152,7 +144,7 @@ class Authentication {
         return json_decode((string)$response->getBody())->affinities->live;
     }
 
-    public function authByUsername($mfa = false, $code = 0){
+    public function authenticate($mfa = false, $code = 0){
         $this->collectCookies();
         if (!$mfa)
         {
@@ -160,7 +152,7 @@ class Authentication {
             if ($authSession == "2FA") return "2FA";
         }else
         {
-            $authSession = $this->start2FA($code);
+            $authSession = $this->requestMfa($code);
         }
         if(isset($authSession->error)){
             if($authSession->error == "auth_failure") return "{\"error\":\"Invalid username or password\"}";
@@ -181,16 +173,6 @@ class Authentication {
         session(['shard' => $region]);
         return $returnArr;
     }
-
-    public function authByToken(){
-        $response = $this->getEntitlements($this->accessToken);
-        if($response == null) return "{\"error\":\"You entered an expired or invalid token.\"}";
-        return array("accessToken"=>$this->accessToken,
-                     "entitlements_token"=>$response,
-                     "shard"=>$this->shard);
-    }
-
-
 // AUTH END //
 }
 ?>
