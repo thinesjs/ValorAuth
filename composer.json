@@ -1,0 +1,23 @@
+{
+    "name": "thinesjs/valor-auth",
+    "description": "PHP Wrapper for Riot Unofficial APIs",
+    "type": "library",
+    "require": {
+        "php": ">=7.4",
+        "guzzlehttp/guzzle": "^7.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Thinesjs\\ValorAuth\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "thinesjs",
+            "email": "thinesjs@gmail.com",
+            "homepage": "https://thinesjs.com/"
+        }
+    ]
+}
