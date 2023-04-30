@@ -9,7 +9,7 @@ A PHP Wrapper package for authenticating with Riot Unofficial APIs with MFA supp
 Install ValorAuth with composer.
 
 ```bash
-composer require thinesjs/valorauth:dev-master
+composer require thinesjs/valor-auth:dev-master --ignore-platform-reqs
 ```
     
 ## Usage/Examples
