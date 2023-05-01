@@ -160,7 +160,7 @@ class Authentication {
         }
         $region = $this->getRegion($this->accessToken);
         $entitlement = $this->getEntitlements($this->accessToken);
-        $returnArr = array("accessToken"=>$this->accessToken,
+        $returnArr = array("access_token"=>$this->accessToken,
                      "entitlements_token"=>$entitlement,
                      "shard"=>$this->shard);
         if(isset($this->ssid)){
