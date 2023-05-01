@@ -17,8 +17,8 @@ Authenticate using riot username and password.
 ```php
 use Thinesjs\ValorAuth\Authentication;
 
-$authentication = new Authentication(["username"=>$request->username, "password"=>$request->password, "shard"=>"ap", "remember"=>true]);
-$riotTokens = $authentication->authByUsername();
+$authenticator = new Authentication(["username"=>$request->username, "password"=>$request->password, "shard"=>"ap", "remember"=>true]);
+$riotTokens = $authenticator->authenticate();
 ```
 
 
